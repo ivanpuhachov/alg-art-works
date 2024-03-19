@@ -10,8 +10,12 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 from torchvision.utils import save_image
+from quickdraw_ae import QDdataset
+from torch.utils.data import Dataset, DataLoader
+import numpy as np
 
 bs = 100
+my_z_dim = 8
 # MNIST Dataset
 train_dataset = datasets.MNIST(root='./mnist_data/', train=True, transform=transforms.ToTensor(), download=True)
 test_dataset = datasets.MNIST(root='./mnist_data/', train=False, transform=transforms.ToTensor(), download=False)
@@ -20,6 +24,19 @@ test_dataset = datasets.MNIST(root='./mnist_data/', train=False, transform=trans
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=bs, shuffle=True)
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=bs, shuffle=False)
 
+# print(next(iter(test_loader))[0][0])
+# raise NotImplementedError
+
+mynames = ['baseball', 'donut', 'lollipop', 'moon']
+figs_per_name = 4000
+
+qd = QDdataset(
+        names=mynames,
+        n_per_name=figs_per_name,
+        )
+
+qdataloader = DataLoader(qd, batch_size=bs,
+                        shuffle=True, num_workers=0,)
 
 
 class VAE(nn.Module):
@@ -57,7 +74,7 @@ class VAE(nn.Module):
         return self.decoder(z), mu, log_var
 
 # build model
-vae = VAE(x_dim=784, h_dim1= 512, h_dim2=256, z_dim=2)
+vae = VAE(x_dim=28*28, h_dim1= 1024, h_dim2=512, z_dim=my_z_dim)
 if torch.cuda.is_available():
     vae.cuda()
 
@@ -71,8 +88,8 @@ def loss_function(recon_x, x, mu, log_var):
 def train(epoch):
     vae.train()
     train_loss = 0
-    for batch_idx, (data, _) in enumerate(train_loader):
-        data = data.cuda()
+    for batch_idx, data in enumerate(qdataloader):
+        data = data.reshape(-1, 28*28).cuda()
         optimizer.zero_grad()
         
         recon_batch, mu, log_var = vae(data)
@@ -84,30 +101,53 @@ def train(epoch):
         
         if batch_idx % 100 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item() / len(data)))
-    print('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss / len(train_loader.dataset)))
+                epoch, batch_idx * len(data), len(qdataloader.dataset),
+                100. * batch_idx / len(qdataloader), loss.item() / len(data)))
+    print('====> Epoch: {} Average loss: {:.4f}'.format(epoch, train_loss / len(qdataloader.dataset)))
 
 def test():
     vae.eval()
     test_loss= 0
     with torch.no_grad():
-        for data, _ in test_loader:
-            data = data.cuda()
+        for data in qdataloader:
+            data = data.reshape(-1,28*28).cuda()
             recon, mu, log_var = vae(data)
             
             # sum up batch loss
             test_loss += loss_function(recon, data, mu, log_var).item()
         
-    test_loss /= len(test_loader.dataset)
+    test_loss /= len(qdataloader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
 
-for epoch in range(1, 51):
+for epoch in range(1, 101):
     train(epoch)
     test()
 
+# torch.save(vae.state_dict(), "vae.ckpt")
+
+# vae.load_state_dict(torch.load("vae.ckpt"))
+
 with torch.no_grad():
-    z = torch.randn(64, 2).cuda()
+    z = torch.randn(64, my_z_dim).cuda()
     sample = vae.decoder(z).cuda()
     
     save_image(sample.view(64, 1, 28, 28), 'sample_' + '.png')
+
+with torch.no_grad():
+    for nn in mynames:
+        qdsmall = QDdataset(names=[nn], n_per_name=figs_per_name)
+        dl = DataLoader(qdsmall, batch_size=bs,
+                        shuffle=False, num_workers=0,)
+        latents = []
+        for dd in dl:
+            data = dd.reshape(-1,28*28).cuda()
+            recon, mu, log_var = vae(data)
+            latents.append(
+                mu.detach().cpu().numpy()
+            )
+        print(latents[0].shape)
+        print(latents[-1].shape)
+        print(len(latents))
+        print("----")
+        latents = np.concatenate(latents, axis=0)
+        np.save(file=f'latents_{nn}.npy', arr=latents)
