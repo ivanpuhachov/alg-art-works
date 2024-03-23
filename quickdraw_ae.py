@@ -25,8 +25,8 @@ class QDdataset(Dataset):
         self._items = np.concatenate(numpy_list, axis=0)
         mean = np.mean(self._items)
         std = np.std(self._items)
-        self._items -= mean
-        self._items /= std
+        # self._items -= mean
+        # self._items /= std
         self.transform = transform
     
     def __len__(self):
@@ -59,7 +59,7 @@ class Autoencoder(torch.nn.Module):
             # torch.nn.Conv2d(8, 8, kernel_size=2, stride=1),
             # torch.nn.Conv2d(8, 4, kernel_size=1),
             torch.nn.Flatten(start_dim=1, end_dim=-1),
-
+            torch.nn.Linear(14*14,49),
             # torch.nn.Conv2d(1, 6, kernel_size=5),
             # torch.nn.ReLU(True),
             # torch.nn.Dropout(p=0.2),
@@ -75,6 +75,8 @@ class Autoencoder(torch.nn.Module):
             )
 
         self.decoder = torch.nn.Sequential(  
+            torch.nn.Linear(49,14*14),
+            torch.nn.ReLU(),
             torch.nn.Linear(14*14,14*14),
             torch.nn.ReLU(),
             # torch.nn.Dropout(p=0.2),
