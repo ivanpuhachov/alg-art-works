@@ -6,9 +6,9 @@ mynames = ['donut', 'onion', 'sheep', 'octopus']
 n_to_plot = 1000
 # projected_points = np.load("projections.npy")
 projected_points = np.load("projections_tsne.npy")
-target_x_ratio = 35
-target_y_ratio = 28
-target_distance_squared = 1
+target_x_ratio = 350
+target_y_ratio = 280
+target_distance_squared = 64
 
 min_x, max_x = np.min(projected_points[:,0]), np.max(projected_points[:,0])
 min_y, max_y = np.min(projected_points[:,1]), np.max(projected_points[:,1])

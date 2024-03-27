@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ndjson
 
-scaling = 6/255
+scaling = 9/255
 
 data = np.load("final_projections.npz")
 print(data.files)
@@ -29,7 +29,8 @@ plt.legend()
 plt.savefig('test.png')
 plt.close()
 
-dwg = svgwrite.Drawing('output_tsne.svg', profile='full')
+dwg = svgwrite.Drawing('output_tsne.svg', profile='full', size=('350mm', '280mm'))
+
 inkscape = Inkscape(dwg)
 layers = [inkscape.layer(label=f"{i}_{n}") for i,n in enumerate(data['mynames'])]
 for l in layers:
@@ -41,11 +42,11 @@ for i_name, drawing_name in enumerate(data['mynames']):
 
     for idx, coords in zip(data[drawing_name], coords):
         # print(idx)
-        print(coords)
+        # print(coords)
         this_drawing_data = drawing_data[drawing_name][idx]['drawing']
         for coord_pair_list in this_drawing_data:
             points = np.array(coord_pair_list).astype(float).T * scaling + coords
-            print(points.shape)
+            # print(points.shape)
             layers[
                 i_name
             ].add(
