@@ -12,10 +12,11 @@ from tqdm import tqdm
 class QDdataset(Dataset):
     def __init__(
             self,
-            folder="/home/ivan/datasets/quickdraw/",
+            folder="quickdraw_data/",
             names=['donut'],
             n_per_name=1000,
             transform=None,
+            return_label=False,
             ) -> None:
         super().__init__()
         numpy_list = []
@@ -28,6 +29,8 @@ class QDdataset(Dataset):
         # self._items -= mean
         # self._items /= std
         self.transform = transform
+        self.n_per_name = n_per_name
+        self.return_label = return_label
     
     def __len__(self):
         return self._items.shape[0]
@@ -37,7 +40,10 @@ class QDdataset(Dataset):
             idx = idx.tolist()
         # if self.transform:
         #     sample = self.transform(sample)
-        return torch.from_numpy(self._items[idx]).float().unsqueeze(0)
+        if self.return_label:
+            return torch.from_numpy(self._items[idx]).float().unsqueeze(0), idx // self.n_per_name
+        else:
+            return torch.from_numpy(self._items[idx]).float().unsqueeze(0)
 
 
 class Autoencoder(torch.nn.Module):
@@ -147,7 +153,7 @@ if __name__ == "__main__":
     # plt.show()
 
     best_loss = 1000
-    for epoch in (pbar := tqdm(range(1000))):
+    for epoch in tqdm(range(1000)):
         model.train()
         total_loss = 0
         for it, data in enumerate(dataloader):
@@ -157,7 +163,7 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        pbar.set_description(f"{total_loss:.5f}")
+        # pbar.set_description(f"{total_loss:.5f}")
         if total_loss < 0.9 * best_loss:
             best_loss = total_loss
             torch.save(model.state_dict(), "best.ckpt")
