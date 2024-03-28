@@ -87,6 +87,9 @@ def experiment():
     os.makedirs(config["logfolder"], exist_ok=True)
     config["trained_per_name"] = 1000
     config["quickdraw_path"] = "/home/ivan/datasets/quickdraw/"
+
+    with open(f'{config["logfolder"]}/config.json', 'w') as json_file:
+        json.dump(config, json_file)
     
     # mnist_data = datasets.MNIST('data', train=True, download=True, transform=transforms.ToTensor())
     mnist_data = QDdataset(
@@ -98,7 +101,7 @@ def experiment():
     # mnist_data = list(mnist_data)[:4096]
 
     model = Autoencoder()
-    max_epochs = 50
+    max_epochs = 100
     outputs = train(model, data=mnist_data, num_epochs=max_epochs)
 
     torch.save(model.state_dict(), f"{config['logfolder']}/model.ckpt")
@@ -143,7 +146,9 @@ def experiment():
     plt.figure()
     plt.title("ORIGINAL")
     plt.scatter(output_matrix[:, 0], output_matrix[:, 1])
-    plt.show()
+    plt.savefig(f"{config['logfolder']}/d1d2.png")
+    plt.close()
+    # plt.show()
 
     X_embedded = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(output_matrix)
 
@@ -155,7 +160,9 @@ def experiment():
     # shapesns.regplot(x=X_embedded[:,0], y=X_embedded[:,1],label = keys_t)
     # plt.show()
     sns.scatterplot(data=data, x="tsne_0", y="tsne_1", hue="key", alpha = 0.4)
-    plt.show()
+    plt.savefig(f"{config['logfolder']}/tsne.png")
+    plt.close()
+    # plt.show()
 
 
 if __name__ == "__main__":

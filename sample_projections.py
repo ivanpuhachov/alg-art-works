@@ -1,11 +1,17 @@
 import matplotlib.pyplot as plt
 import kdtree
+import json
 import numpy as np
 
-mynames = ['donut', 'onion', 'sheep', 'octopus']
-n_to_plot = 1000
+experiment_name = "donutonionsheepoctopus"
+
+with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
+    config = json.load(json_file)
+
+mynames = config['datanames']
+n_to_plot = config["trained_per_name"]
 # projected_points = np.load("projections.npy")
-projected_points = np.load("projections_tsne.npy")
+projected_points = np.load(f"logs/{experiment_name}/projections_tsne.npy")
 target_x_ratio = 350
 target_y_ratio = 280
 target_distance_squared = 64
@@ -38,7 +44,7 @@ for i, name in enumerate(mynames):
     named_samples_coords[f"{name}_coords"] = data[[samples],:2][0]
 
 np.savez(
-    file="final_projections.npz",
+    file=f"logs/{experiment_name}/final_projections.npz",
     mynames=np.array(mynames),
     n_to_plot = 1000,
     **named_samples,
@@ -52,6 +58,6 @@ for i, name in enumerate(mynames):
     samples = named_samples[name]
     plt.scatter(data[[samples],0], data[[samples],1], label=name)
 plt.legend()
-plt.savefig('visTSNE_downsampled.png')
+plt.savefig(f"logs/{experiment_name}/visTSNE_downsampled.png")
 plt.close()
         

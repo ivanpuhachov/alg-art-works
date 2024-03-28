@@ -3,33 +3,30 @@ from svgwrite.extensions import Inkscape
 import numpy as np
 import matplotlib.pyplot as plt
 import ndjson
+import json
+from tqdm import tqdm
+
+experiment_name = "donutonionsheepoctopus"
+
+with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
+    config = json.load(json_file)
 
 scaling = 9/255
 
-data = np.load("final_projections.npz")
+data = np.load(f"logs/{experiment_name}/final_projections.npz")
 print(data.files)
 
 drawing_data = dict()
 print("Load NDJSON files")
-for n in data['mynames']:
+for n in tqdm(data['mynames']):
     with open(f'/home/ivan/datasets/quickdraw/{n}.ndjson') as f:
         drawing_data[n] = ndjson.load(f)[:data['n_to_plot']]
 print(drawing_data.keys())
-print(drawing_data['donut'][0].keys())
-print(drawing_data['donut'][0]['drawing'])
-print(len(drawing_data['donut'][0]['drawing']))
+# print(drawing_data['donut'][0].keys())
+# print(drawing_data['donut'][0]['drawing'])
+# print(len(drawing_data['donut'][0]['drawing']))
 
-
-plt.figure()
-for name in data['mynames']:
-    coords = data[f"{name}_coords"]
-    # print(coords.shape)
-    plt.scatter(coords[:, 0], coords[:, 1], label=name)
-plt.legend()
-plt.savefig('test.png')
-plt.close()
-
-dwg = svgwrite.Drawing('output_tsne.svg', profile='full', size=('350mm', '280mm'))
+dwg = svgwrite.Drawing(f"logs/{experiment_name}/output_tsne.svg", profile='full', size=('350mm', '280mm'))
 
 inkscape = Inkscape(dwg)
 layers = [inkscape.layer(label=f"{i}_{n}") for i,n in enumerate(data['mynames'])]
