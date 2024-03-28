@@ -3,7 +3,7 @@ import kdtree
 import json
 import numpy as np
 
-experiment_name = "donutcookiebreadcakemoon"
+experiment_name = "donutonionappleleaflollipop"
 
 with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
     config = json.load(json_file)
@@ -14,7 +14,7 @@ n_to_plot = config["trained_per_name"]
 projected_points = np.load(f"logs/{experiment_name}/projections_tsne.npy")
 target_x_ratio = 350
 target_y_ratio = 280
-target_distance_squared = 64
+target_distance_squared = 81
 
 min_x, max_x = np.min(projected_points[:,0]), np.max(projected_points[:,0])
 min_y, max_y = np.min(projected_points[:,1]), np.max(projected_points[:,1])
@@ -41,6 +41,7 @@ for i, name in enumerate(mynames):
             samples.append(shuffled_indicies[j])
             tree.add((point[0], point[1]))
     named_samples[name] = samples
+    print(f"{name} -> {len(samples)}")
     named_samples_coords[f"{name}_coords"] = data[[samples],:2][0]
 
 np.savez(

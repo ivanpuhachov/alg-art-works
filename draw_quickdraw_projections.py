@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 palette = ['brown', 'darkgreen', 'darksalmon', 'goldenrod', 'indigo', 'magenta',]
 
-experiment_name = "donutcookiebreadcakemoon"
+experiment_name = "donutonionappleleaflollipop"
 
 with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
     config = json.load(json_file)
@@ -30,8 +30,14 @@ print(drawing_data.keys())
 
 dwg = svgwrite.Drawing(f"logs/{experiment_name}/{experiment_name}.svg", profile='full', size=('350mm', '280mm'))
 
+dwg_list = [
+    svgwrite.Drawing(f"logs/{experiment_name}/{n}_{experiment_name}.svg", profile='full', size=('350mm', '280mm'))
+    for n in data['mynames']
+]
+
+
 inkscape = Inkscape(dwg)
-layers = [inkscape.layer(label=f"{i}_{n}") for i,n in enumerate(data['mynames'])]
+layers = [inkscape.layer(label=f"{i+1}_{n}") for i,n in enumerate(data['mynames'])]
 for l in layers:
     dwg.add(l)
 
@@ -51,5 +57,11 @@ for i_name, drawing_name in enumerate(data['mynames']):
             ].add(
                 dwg.polyline(points=points.tolist(), stroke=palette[i_name], fill='none', stroke_width=.2,)
             )
+            dwg_list[i_name].add(
+                dwg.polyline(points=points.tolist(), stroke=palette[i_name], fill='none', stroke_width=.2,)
+            )
 
 dwg.save()
+
+for i,n in enumerate(data['mynames']):
+    dwg_list[i].save()

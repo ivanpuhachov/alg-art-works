@@ -53,7 +53,7 @@ def train(
         model, 
         data,
         num_epochs=50, 
-        batch_size=256, 
+        batch_size=1024, 
         learning_rate=1e-3,
         ):
     model = model.cuda()
@@ -82,9 +82,12 @@ def train(
 
 def experiment():
     config = dict()
-    # config["datanames"] = ['donut', 'apple', 'cake', 'bread', 'lllipop']
+    # config["datanames"] = ['donut', 'apple', 'cake', 'bread', 'lollipop']
     # config["datanames"] = ['donut', 'onion', 'sheep', 'octopus']
-    config["datanames"] = ['donut', 'cookie', 'bread', 'cake', 'moon']
+    # config["datanames"] = ['donut', 'cookie', 'bread', 'cake', 'moon']
+    # config["datanames"] = ['donut', 'hamburger', 'leaf', 'tooth', 'teapot']
+    # config["datanames"] = ['donut', 'onion', 'apple', 'leaf', 'lollipop']
+    config["datanames"] = ['donut', 'frog']
     config["logfolder"] = f"logs/{''.join(config['datanames'])}"
     os.makedirs(config["logfolder"], exist_ok=True)
     config["trained_per_name"] = 4000
@@ -152,16 +155,25 @@ def experiment():
     plt.close()
     # plt.show()
 
+    print("=== TSNE ===")
     X_embedded = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(output_matrix)
 
     np.save(f"{config['logfolder']}/projections_tsne.npy", arr=X_embedded)
 
-    data = pd.DataFrame(X_embedded, columns=['tsne_0','tsne_1'])
-    data['key'] = keys_t
-    print(data.shape)
+    # data = pd.DataFrame(X_embedded, columns=['tsne_0','tsne_1'])
+    # data['key'] = keys_t
+    # print(data.shape)
     # shapesns.regplot(x=X_embedded[:,0], y=X_embedded[:,1],label = keys_t)
     # plt.show()
-    sns.scatterplot(data=data, x="tsne_0", y="tsne_1", hue="key", alpha = 0.4)
+    # sns.scatterplot(data=data, x="tsne_0", y="tsne_1", hue="key", alpha = 0.4)
+    plt.figure()
+    for i_name, nname in enumerate(config["datanames"]):
+        nn = config["trained_per_name"]
+        plt.scatter(X_embedded[i_name*nn:(i_name+1)*nn, 0],
+                    X_embedded[i_name*nn:(i_name+1)*nn, 1],
+                    label=nname,
+                    alpha=0.5)
+    plt.legend()
     plt.savefig(f"{config['logfolder']}/tsne.png")
     plt.close()
     # plt.show()
