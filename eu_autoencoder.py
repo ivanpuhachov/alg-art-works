@@ -53,7 +53,7 @@ def train(
         model, 
         data,
         num_epochs=50, 
-        batch_size=64, 
+        batch_size=256, 
         learning_rate=1e-3,
         ):
     model = model.cuda()
@@ -82,10 +82,12 @@ def train(
 
 def experiment():
     config = dict()
-    config["datanames"] = ['donut', 'onion', 'sheep', 'octopus']
+    # config["datanames"] = ['donut', 'apple', 'cake', 'bread', 'lllipop']
+    # config["datanames"] = ['donut', 'onion', 'sheep', 'octopus']
+    config["datanames"] = ['donut', 'cookie', 'bread', 'cake', 'moon']
     config["logfolder"] = f"logs/{''.join(config['datanames'])}"
     os.makedirs(config["logfolder"], exist_ok=True)
-    config["trained_per_name"] = 1000
+    config["trained_per_name"] = 4000
     config["quickdraw_path"] = "/home/ivan/datasets/quickdraw/"
 
     with open(f'{config["logfolder"]}/config.json', 'w') as json_file:

@@ -3,7 +3,7 @@ import kdtree
 import json
 import numpy as np
 
-experiment_name = "donutonionsheepoctopus"
+experiment_name = "donutcookiebreadcakemoon"
 
 with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
     config = json.load(json_file)
@@ -46,7 +46,7 @@ for i, name in enumerate(mynames):
 np.savez(
     file=f"logs/{experiment_name}/final_projections.npz",
     mynames=np.array(mynames),
-    n_to_plot = 1000,
+    n_to_plot = n_to_plot,
     **named_samples,
     **named_samples_coords,
 )

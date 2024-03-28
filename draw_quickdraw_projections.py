@@ -6,7 +6,9 @@ import ndjson
 import json
 from tqdm import tqdm
 
-experiment_name = "donutonionsheepoctopus"
+palette = ['brown', 'darkgreen', 'darksalmon', 'goldenrod', 'indigo', 'magenta',]
+
+experiment_name = "donutcookiebreadcakemoon"
 
 with open(f'logs/{experiment_name}/config.json', 'r') as json_file:
     config = json.load(json_file)
@@ -20,7 +22,7 @@ drawing_data = dict()
 print("Load NDJSON files")
 for n in tqdm(data['mynames']):
     with open(f'/home/ivan/datasets/quickdraw/{n}.ndjson') as f:
-        drawing_data[n] = ndjson.load(f)[:data['n_to_plot']]
+        drawing_data[n] = ndjson.load(f)
 print(drawing_data.keys())
 # print(drawing_data['donut'][0].keys())
 # print(drawing_data['donut'][0]['drawing'])
@@ -47,7 +49,7 @@ for i_name, drawing_name in enumerate(data['mynames']):
             layers[
                 i_name
             ].add(
-                dwg.polyline(points=points.tolist(), stroke='black', fill='none', stroke_width=.2,)
+                dwg.polyline(points=points.tolist(), stroke=palette[i_name], fill='none', stroke_width=.2,)
             )
 
 dwg.save()
