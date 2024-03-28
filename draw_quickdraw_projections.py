@@ -26,7 +26,7 @@ print(drawing_data.keys())
 # print(drawing_data['donut'][0]['drawing'])
 # print(len(drawing_data['donut'][0]['drawing']))
 
-dwg = svgwrite.Drawing(f"logs/{experiment_name}/output_tsne.svg", profile='full', size=('350mm', '280mm'))
+dwg = svgwrite.Drawing(f"logs/{experiment_name}/{experiment_name}.svg", profile='full', size=('350mm', '280mm'))
 
 inkscape = Inkscape(dwg)
 layers = [inkscape.layer(label=f"{i}_{n}") for i,n in enumerate(data['mynames'])]
