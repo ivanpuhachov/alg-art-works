@@ -2,13 +2,18 @@ This repo started as an attempt to do level plots in Python
 
 *** 
 # Perlin noise circles field
+Perlin noise implementation from https://github.com/pvigier/perlin-numpy/blob/master/perlin_numpy/perlin2d.py
 
+![curvy circles field](demo/circles.png)
+
+* `grass_field.py` generates random curves
+* `curve_circles.py` samples circles along curves from svg file
 
 ***
 # No banana
 Inspired by marching cubes algo - we work with negative space.
 ![no banana example](demo/nobanana.png)
-see `nobanana.py` 
+ * see `nobanana.py`, uses Shapely to do operations on shapes
 ***
 # QuickDraw 2d projection
 ![latent space](demo/latent.png)
