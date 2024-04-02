@@ -2,4 +2,4 @@ data/
 mnist_data/
 __pycache__
 *.npy
-*.png
+# *.png
