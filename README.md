@@ -1,5 +1,12 @@
 This repo started as an attempt to do level plots in Python
 
+***
+# Torus curves
+See also my post here - https://puhachov.xyz/projects/BezierCurve_to_SVG_in_Blender/
+![random curves on a bagel](demo/bagel.png)
+* `blender_curve_on_torus.py` - example, creates a curve winding a torus
+* `blender_curve_rendering_script.py` - a script to render only visible parts of curves to svg
+
 *** 
 # Perlin noise circles field
 Perlin noise implementation from https://github.com/pvigier/perlin-numpy/blob/master/perlin_numpy/perlin2d.py
